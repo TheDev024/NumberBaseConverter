@@ -1,0 +1,25 @@
+[1;31m
+Start test 1[0m
+%Enter number in decimal system:> 571
+Enter target base:> 16
+Conversion result: 23B
+[1;31m
+Start test 2[0m
+%Enter number in decimal system:> 106
+Enter target base:> 16
+Conversion result: 6A
+[1;31m
+Start test 3[0m
+%Enter number in decimal system:> 896
+Enter target base:> 16
+Conversion result: 380
+[1;31m
+Start test 4[0m
+%Enter number in decimal system:> 765
+Enter target base:> 2
+Conversion result: 1011111101
+[1;31m
+Start test 5[0m
+%Enter number in decimal system:> 710
+Enter target base:> 8
+Conversion result: 1306
