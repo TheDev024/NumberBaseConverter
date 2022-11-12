@@ -1,118 +1,58 @@
 package converter
 
-import kotlin.math.pow
+import java.math.BigInteger
+import java.util.*
+
+val scanner = Scanner(System.`in`)
 
 class NumberBaseConverter {
-    fun convertFrom(n: Int, base: Int): String {
-        return when (base) {
-            2 -> toBinary(n)
-
-            8 -> toOctal(n)
-
-            16 -> toHex(n)
-
-            else -> ""
-        }
+    fun convert(n: String, from: BigInteger, to: BigInteger): String {
+        val dec = toDecimal(n, from)
+        return fromDecimal(dec, to)
     }
 
-    fun convertTo(n: String, base: Int): Int = toDecimal(base, n)
-
-    private fun toDecimal(base: Int, n: String): Int {
-        var number = 0
-
-        var i = 0
-
-        for (digit in n.reversed()) {
-            val a = when(digit) {
-                'A' -> 10
-
-                'B' -> 11
-
-                'C' -> 12
-
-                'D' -> 13
-
-                'E' -> 14
-
-                'F' -> 15
-
-                else -> digit.digitToInt()
+    private fun toDecimal(number: String, base: BigInteger): BigInteger {
+        var converted = BigInteger.ZERO
+        var i = number.lastIndex
+        for (digit in number.uppercase()) {
+            val n = when (digit) {
+                in '0'..'9' -> digit.digitToInt().toBigInteger()
+                else -> (digit.code - 55).toBigInteger()
             }
-
-            number += a * base.toDouble().pow(i++).toInt()
+            converted += n * base.pow(i--)
         }
-
-        return number
+        return converted
     }
 
-    private fun toBinary(n: Int): String {
-        var binary = 0
-        var i = 0
-        var a = n
-        while (a > 0) {
-            binary += (a % 2) * 10.0.pow(i.toDouble()).toInt()
-            a /= 2
-            i += 1
-        }
-        return binary.toString()
-    }
-
-    private fun toOctal(n: Int): String {
-        var octal = 0
-        var i = 0
-        var a = n
-        while (a > 0) {
-            octal += (a % 8) * 10.0.pow(i.toDouble()).toInt()
-            a /= 8
-            i += 1
-        }
-        return octal.toString()
-    }
-
-    private fun toHex(n: Int): String {
-        var hex = ""
-        var a = n
-        while (a > 0) {
-            hex += when (a % 16) {
-                10 -> 'A'
-                11 -> 'B'
-                12 -> 'C'
-                13 -> 'D'
-                14 -> 'E'
-                15 -> 'F'
-                else -> (a % 16).digitToChar()
+    private fun fromDecimal(number: BigInteger, base: BigInteger): String {
+        var converted = ""
+        var n = number
+        while (n > BigInteger.ZERO) {
+            val digit = when (val rem = n.divideAndRemainder(base)[1]) {
+                in BigInteger.ZERO..BigInteger.valueOf(9) -> rem.toInt().digitToChar()
+                else -> (rem + 55.toBigInteger()).toInt().toChar()
             }
-            a /= 16
+            converted += digit
+            n /= base
         }
-        return hex.reversed()
+        converted = converted.reversed()
+
+        return converted
     }
 }
 
 fun main() {
     val converter = NumberBaseConverter()
-
-    while (true) {
-        print("Do you want to convertFrom /from decimal or /to decimal? (To quit type /exit) ")
-        when (readln()) {
-            "/exit" -> break
-
-            "/from" -> {
-                print("Enter number in decimal system:")
-                val n = readln().toInt()
-                print("Enter target base:")
-                val base = readln().toInt()
-                print("Conversion result: ")
-                println(converter.convertFrom(n, base))
-            }
-
-            "/to" -> {
-                print("Enter source number: ")
-                val source = readln()
-                print("Enter source base: ")
-                val base = readln().toInt()
-                println("Conversion to decimal result: ${converter.convertTo(source.uppercase(), base)}")
-            }
+    core@while (true) {
+        print("Enter two numbers in format: {source base} {target base} (To quit type /exit) ")
+        val input = scanner.nextLine()
+        if (input == "/exit") break@core
+        val (from, to) = input.split(" ")
+        while (true) {
+            print("Enter number in base $from to convert to base $to (To go back type /back) ")
+            val n = scanner.nextLine()
+            if (n == "/back") break
+            println("Conversion result: " + converter.convert(n, from.toBigInteger(), to.toBigInteger()))
         }
-
     }
 }
