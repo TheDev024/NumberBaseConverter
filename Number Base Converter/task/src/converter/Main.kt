@@ -1,10 +1,9 @@
 package converter
 
-import java.lang.Math.pow
 import kotlin.math.pow
 
 class NumberBaseConverter {
-    fun convert(n: Int, base: Int): String {
+    fun convertFrom(n: Int, base: Int): String {
         return when (base) {
             2 -> toBinary(n)
 
@@ -16,7 +15,37 @@ class NumberBaseConverter {
         }
     }
 
-    fun toBinary(n: Int): String {
+    fun convertTo(n: String, base: Int): Int = toDecimal(base, n)
+
+    private fun toDecimal(base: Int, n: String): Int {
+        var number = 0
+
+        var i = 0
+
+        for (digit in n.reversed()) {
+            val a = when(digit) {
+                'A' -> 10
+
+                'B' -> 11
+
+                'C' -> 12
+
+                'D' -> 13
+
+                'E' -> 14
+
+                'F' -> 15
+
+                else -> digit.digitToInt()
+            }
+
+            number += a * base.toDouble().pow(i++).toInt()
+        }
+
+        return number
+    }
+
+    private fun toBinary(n: Int): String {
         var binary = 0
         var i = 0
         var a = n
@@ -28,7 +57,7 @@ class NumberBaseConverter {
         return binary.toString()
     }
 
-    fun toOctal(n: Int): String {
+    private fun toOctal(n: Int): String {
         var octal = 0
         var i = 0
         var a = n
@@ -40,9 +69,8 @@ class NumberBaseConverter {
         return octal.toString()
     }
 
-    fun toHex(n: Int): String {
+    private fun toHex(n: Int): String {
         var hex = ""
-        var i = 0
         var a = n
         while (a > 0) {
             hex += when (a % 16) {
@@ -62,10 +90,29 @@ class NumberBaseConverter {
 
 fun main() {
     val converter = NumberBaseConverter()
-    print("Enter number in decimal system:")
-    val n = readln().toInt()
-    print("Enter target base:")
-    val base = readln().toInt()
-    print("Conversion result: ")
-    println(converter.convert(n, base))
+
+    while (true) {
+        print("Do you want to convertFrom /from decimal or /to decimal? (To quit type /exit) ")
+        when (readln()) {
+            "/exit" -> break
+
+            "/from" -> {
+                print("Enter number in decimal system:")
+                val n = readln().toInt()
+                print("Enter target base:")
+                val base = readln().toInt()
+                print("Conversion result: ")
+                println(converter.convertFrom(n, base))
+            }
+
+            "/to" -> {
+                print("Enter source number: ")
+                val source = readln()
+                print("Enter source base: ")
+                val base = readln().toInt()
+                println("Conversion to decimal result: ${converter.convertTo(source.uppercase(), base)}")
+            }
+        }
+
+    }
 }
